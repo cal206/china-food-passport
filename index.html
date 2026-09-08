@@ -1,442 +1,70 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#9b1c1c">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="China Food">
-  <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="manifest" href="manifest.webmanifest">
-  <title>China Food Passport</title>
-  <style>
-    :root {
-      --red:#9b1c1c; --red2:#7d1515; --cream:#fff7e8; --paper:#fffdfa;
-      --ink:#2e2824; --muted:#746b63; --line:#e5ddd2; --green:#2f7d4a;
-      --gold:#b98519; --shadow:0 8px 28px rgba(70,35,20,.10);
-    }
-    * { box-sizing:border-box; }
-    html { background:#f7f2eb; color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
-    body { margin:0; min-height:100%; background:linear-gradient(180deg,#fdf8f0 0,#f7f2eb 260px); }
-    button,input,select,textarea { font:inherit; }
-    button { cursor:pointer; }
-    .app { max-width:760px; margin:0 auto; padding:env(safe-area-inset-top) 14px calc(40px + env(safe-area-inset-bottom)); }
-    .hero {
-      margin:0 -14px 14px; padding:24px 18px 20px;
-      background:var(--red); color:white; border-radius:0 0 28px 28px;
-      box-shadow:var(--shadow);
-    }
-    .eyebrow { font-size:12px; letter-spacing:.13em; text-transform:uppercase; opacity:.8; font-weight:700; }
-    h1 { margin:5px 0 6px; font-family:Georgia,serif; font-size:32px; line-height:1.05; }
-    .subtitle { margin:0; opacity:.9; font-size:14px; }
-    .progress-wrap { margin-top:18px; display:grid; gap:7px; }
-    .progress-line { display:flex; justify-content:space-between; gap:10px; font-size:13px; }
-    .progress { height:10px; background:rgba(255,255,255,.22); border-radius:99px; overflow:hidden; }
-    .progress > div { height:100%; width:0; background:#ffd98d; border-radius:99px; transition:width .25s ease; }
-    .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:14px; }
-    .stat { background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.16); border-radius:14px; padding:10px; }
-    .stat b { display:block; font-size:20px; }
-    .stat span { font-size:11px; opacity:.8; }
-    .toolbar {
-      display:grid; grid-template-columns:1fr auto; gap:8px; margin:14px 0 10px;
-    }
-    .search { width:100%; padding:12px 13px; border:1px solid var(--line); border-radius:14px; background:white; color:var(--ink); min-height:44px; }
-    .filter { border:1px solid var(--line); border-radius:14px; background:white; color:var(--ink); padding:0 12px; min-height:44px; }
-    .cities { display:flex; gap:8px; overflow-x:auto; padding:2px 0 10px; scrollbar-width:none; }
-    .cities::-webkit-scrollbar { display:none; }
-    .chip {
-      flex:0 0 auto; border:1px solid var(--line); background:white; color:var(--ink);
-      border-radius:999px; padding:9px 13px; min-height:40px; font-weight:700; font-size:13px;
-    }
-    .chip.active { background:var(--red); border-color:var(--red); color:white; }
-    .section-head { display:flex; justify-content:space-between; align-items:end; gap:10px; margin:14px 2px 8px; }
-    .section-head h2 { margin:0; font-size:22px; font-family:Georgia,serif; }
-    .section-head span { color:var(--muted); font-size:12px; }
-    .grid { display:grid; gap:11px; }
-    .card {
-      background:var(--paper); border:1px solid var(--line); border-radius:20px;
-      box-shadow:0 3px 14px rgba(60,30,15,.055); overflow:hidden;
-    }
-    .card.tried { border-color:#bdd8c7; }
-    .card-main { display:grid; grid-template-columns:92px 1fr; min-height:116px; }
-    .photo {
-      background:#eee7de; position:relative; overflow:hidden; display:grid; place-items:center; color:#8a8178;
-    }
-    .photo img { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; }
-    .photo-placeholder { font-size:28px; }
-    .photo small { position:absolute; bottom:7px; left:7px; right:7px; text-align:center; font-size:10px; background:rgba(255,255,255,.78); color:#4d463f; border-radius:8px; padding:3px; }
-    .body { padding:12px 12px 10px; min-width:0; }
-    .toprow { display:flex; justify-content:space-between; gap:10px; align-items:flex-start; }
-    .name { font-weight:800; line-height:1.2; font-size:16px; }
-    .cn { font-size:13px; color:var(--muted); margin-top:3px; }
-    .check {
-      width:30px; height:30px; border-radius:9px; border:2px solid #cbbfb2; background:white; flex:0 0 auto;
-      display:grid; place-items:center; color:white; font-weight:900;
-    }
-    .check.on { background:var(--green); border-color:var(--green); }
-    .controls { display:flex; flex-wrap:wrap; gap:8px; margin-top:11px; align-items:center; }
-    .score { min-height:38px; border:1px solid var(--line); background:white; border-radius:10px; padding:0 9px; }
-    .small-btn {
-      min-height:38px; border:1px solid var(--line); background:white; border-radius:10px; padding:0 10px; color:var(--ink); font-weight:700;
-    }
-    .small-btn.primary { background:var(--cream); border-color:#eed9af; color:#6f4d0f; }
-    .notes {
-      display:none; width:100%; margin-top:10px; min-height:68px; border:1px solid var(--line);
-      border-radius:12px; padding:10px; resize:vertical; background:#fff;
-    }
-    .notes.open { display:block; }
-    .card-footer { padding:0 12px 12px 104px; margin-top:-2px; }
-    .city-tag { font-size:11px; color:var(--muted); }
-    .empty { text-align:center; color:var(--muted); padding:38px 10px; }
-    .bottom-actions { display:flex; flex-wrap:wrap; gap:8px; margin:18px 0 0; }
-    .bottom-actions button,.import-label {
-      border:1px solid var(--line); background:white; border-radius:12px; min-height:42px; padding:0 12px; font-weight:700; color:var(--ink); display:inline-flex; align-items:center; justify-content:center;
-    }
-    .import-label input { display:none; }
-    dialog {
-      width:min(92vw,520px); border:none; border-radius:22px; padding:0; color:var(--ink); box-shadow:0 24px 70px rgba(40,20,10,.28);
-    }
-    dialog::backdrop { background:rgba(40,25,18,.48); backdrop-filter:blur(2px); }
-    .modal { padding:20px; background:var(--paper); }
-    .modal h3 { margin:0 34px 4px 0; font-family:Georgia,serif; font-size:24px; }
-    .modal .cn { font-size:15px; }
-    .modal p { line-height:1.55; }
-    .tip { background:var(--cream); border:1px solid #ecd8ad; border-radius:14px; padding:12px; }
-    .close { position:absolute; right:12px; top:12px; width:38px; height:38px; border:none; border-radius:50%; background:#f2ece5; font-size:20px; }
-    .toast { position:fixed; left:50%; bottom:calc(18px + env(safe-area-inset-bottom)); transform:translateX(-50%); background:#2e2824; color:white; padding:10px 14px; border-radius:12px; font-size:13px; opacity:0; pointer-events:none; transition:.2s; z-index:50; }
-    .toast.show { opacity:1; }
-    @media (min-width:620px) {
-      .grid { grid-template-columns:1fr 1fr; }
-      .card-footer { padding-left:12px; }
-      .toolbar { grid-template-columns:1fr 150px; }
-    }
-    @media (prefers-reduced-motion:reduce) {
-      * { scroll-behavior:auto !important; transition:none !important; }
-    }
-  </style>
-</head>
-<body>
-  <main class="app">
-    <section class="hero">
-      <div class="eyebrow">20-day China trip</div>
-      <h1>China Food Passport</h1>
-      <p class="subtitle">Try it. Rate it. Photograph it. Remember it.</p>
-      <div class="progress-wrap">
-        <div class="progress-line"><span id="progressText">0 of 39 tried</span><strong id="progressPct">0%</strong></div>
-        <div class="progress"><div id="progressBar"></div></div>
-      </div>
-      <div class="stats">
-        <div class="stat"><b id="statTried">0</b><span>dishes tried</span></div>
-        <div class="stat"><b id="statScore">—</b><span>average score</span></div>
-        <div class="stat"><b>8</b><span>food stops</span></div>
-      </div>
-    </section>
-
-    <div class="toolbar">
-      <input id="search" class="search" type="search" placeholder="Search food or Chinese name…" aria-label="Search foods">
-      <select id="filter" class="filter" aria-label="Filter dishes">
-        <option value="all">All dishes</option>
-        <option value="untried">Not tried</option>
-        <option value="tried">Tried</option>
-        <option value="rated9">9–10 rated</option>
-      </select>
-    </div>
-
-    <nav class="cities" id="cities" aria-label="Filter by city"></nav>
-
-    <div class="section-head">
-      <h2 id="viewTitle">All foods</h2>
-      <span id="viewCount"></span>
-    </div>
-    <section id="foodGrid" class="grid" aria-live="polite"></section>
-
-    <div class="bottom-actions">
-      <button id="exportBtn" type="button">Export backup</button>
-      <label class="import-label">Import backup<input id="importInput" type="file" accept="application/json"></label>
-      <button id="resetBtn" type="button">Reset trip data</button>
-    </div>
-  </main>
-
-  <dialog id="descDialog">
-    <div class="modal">
-      <button class="close" id="closeDialog" aria-label="Close description">×</button>
-      <h3 id="modalName"></h3>
-      <div class="cn" id="modalCn"></div>
-      <p id="modalDesc"></p>
-      <div class="tip"><strong>Ordering tip</strong><br><span id="modalTip"></span></div>
-    </div>
-  </dialog>
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#951d18"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="China Passport">
+<link rel="apple-touch-icon" href="icon-192.png"><link rel="manifest" href="manifest.webmanifest">
+<title>China Trip Passport</title>
+<style>
+:root{--r:#951d18;--c:#fff5df;--p:#fffdfa;--i:#2d2824;--m:#756c65;--l:#e5ddd3;--g:#2f7b49;--s:#f7f2eb}
+*{box-sizing:border-box}html{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--s);color:var(--i)}body{margin:0;background:linear-gradient(#fbf7f0,#f6f1ea 360px)}
+button,input,select,textarea{font:inherit}.app{max-width:820px;margin:auto;padding:env(safe-area-inset-top) 14px calc(45px + env(safe-area-inset-bottom))}
+.hero{margin:0 -14px 12px;padding:22px 18px 18px;border-radius:0 0 28px 28px;background:var(--r);color:#fff}.ey{font-size:11px;letter-spacing:.14em;font-weight:800;opacity:.8;text-transform:uppercase}
+h1{font:30px/1.05 Georgia,serif;margin:5px 0}.hero p{font-size:13px;margin:0;opacity:.9}.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:15px}
+.tab{min-height:43px;border:1px solid #ffffff33;border-radius:12px;background:#ffffff1c;color:#fff;font-weight:800}.tab.on{background:#fff;color:var(--r)}
+.pbar{height:9px;background:#ffffff33;border-radius:20px;overflow:hidden;margin-top:6px}.pbar div{height:100%;background:#ffd98a;width:0}.pline{display:flex;justify-content:space-between;font-size:12px;margin-top:14px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:11px}.stat{padding:9px;border:1px solid #ffffff25;background:#ffffff16;border-radius:13px}.stat b{display:block;font-size:18px}.stat span{font-size:10px;opacity:.8}
+.toolbar{display:grid;grid-template-columns:1fr auto;gap:8px;margin:12px 0 9px}.search,.filter{min-height:44px;border:1px solid var(--l);border-radius:14px;background:#fff;padding:0 12px;color:var(--i)}
+.cities{display:flex;gap:8px;overflow:auto;padding-bottom:9px;scrollbar-width:none}.chip{flex:none;min-height:39px;border:1px solid var(--l);border-radius:30px;background:#fff;padding:0 13px;font-size:12px;font-weight:800}.chip.on{background:var(--r);color:#fff;border-color:var(--r)}
+.sh{display:flex;justify-content:space-between;align-items:end;margin:11px 2px 8px}.sh h2{font:22px Georgia,serif;margin:0}.sh span{font-size:12px;color:var(--m)}
+.grid{display:grid;gap:10px}.card{background:var(--p);border:1px solid var(--l);border-radius:19px;overflow:hidden}.card.done{border-color:#bcd6c5}.main{display:grid;grid-template-columns:92px 1fr;min-height:114px}
+.photo{position:relative;display:grid;place-items:center;background:#eee7de;overflow:hidden;font-size:27px}.photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.photo small{position:absolute;bottom:6px;left:6px;right:6px;background:#ffffffc8;border-radius:7px;text-align:center;padding:3px;font-size:9px;color:#544d47}
+.body{padding:11px 12px 9px;min-width:0}.top{display:flex;justify-content:space-between;gap:10px}.name{font-size:16px;font-weight:850}.cn{font-size:12px;color:var(--m);margin-top:2px}.pri{display:inline-block;margin-top:6px;padding:3px 7px;border-radius:20px;background:var(--c);font-size:10px;font-weight:800}.pri.must-see{background:#f8dfdc;color:#8a1a14}
+.check{width:31px;height:31px;flex:none;border:2px solid #cbbfb4;border-radius:9px;background:#fff;color:#fff;font-weight:900}.check.on{background:var(--g);border-color:var(--g)}
+.controls{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.score,.btn{min-height:37px;border:1px solid var(--l);border-radius:10px;background:#fff;padding:0 9px}.btn{font-weight:750}.btn.info{background:var(--c);color:#6b4c0e}.notes{display:none;width:100%;min-height:68px;border:1px solid var(--l);border-radius:11px;padding:9px}.notes.on{display:block}.foot{padding:0 12px 11px 104px;color:var(--m);font-size:10px}
+.high{display:grid;gap:12px}.box{background:#fff;border:1px solid var(--l);border-radius:18px;padding:14px}.box h3{font:19px Georgia,serif;margin:0 0 9px}.rank{display:grid;gap:8px}.ri{display:grid;grid-template-columns:30px 1fr auto;gap:8px;align-items:center;padding:8px;border-radius:12px;background:var(--s)}.num{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--r);color:#fff;font-weight:900}.ri b{font-size:13px;display:block}.ri small{color:var(--m)}.rs{font-weight:900;color:var(--r)}
+.cityrow{display:grid;grid-template-columns:86px 1fr 42px;gap:8px;align-items:center;font-size:12px;margin:8px 0}.mini{height:8px;border-radius:20px;background:#eee6dc;overflow:hidden}.mini div{height:100%;background:var(--g)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.actions button,.imp{min-height:42px;border:1px solid var(--l);border-radius:12px;background:#fff;padding:0 11px;font-weight:750;display:inline-flex;align-items:center}.imp input{display:none}
+dialog{width:min(92vw,520px);border:0;border-radius:22px;padding:0}dialog::backdrop{background:#2819127a}.modal{padding:20px;background:var(--p);position:relative}.modal h3{font:24px Georgia,serif;margin:0 38px 4px 0}.modal p{line-height:1.55}.tip{background:var(--c);border-radius:13px;padding:11px}.close{position:absolute;right:11px;top:11px;width:38px;height:38px;border:0;border-radius:50%;font-size:20px}.empty{text-align:center;color:var(--m);padding:32px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#2d2824;color:#fff;padding:9px 13px;border-radius:11px;opacity:0;pointer-events:none}.toast.on{opacity:1}
+@media(min-width:650px){.grid{grid-template-columns:1fr 1fr}.foot{padding-left:12px}.high{grid-template-columns:1fr 1fr}}
+</style></head><body><main class="app">
+<section class="hero"><div class="ey">China 2026</div><h1>China Trip Passport</h1><p>Food, sights and your favourite moments in one place.</p>
+<div class="tabs"><button class="tab on" data-v="food">🍜 Food</button><button class="tab" data-v="sight">🏯 Sights</button><button class="tab" data-v="high">🏆 Highlights</button></div>
+<div class="pline"><span id="pt">0 completed</span><b id="pp">0%</b></div><div class="pbar"><div id="pb"></div></div>
+<div class="stats"><div class="stat"><b id="sd">0</b><span id="sdl">foods tried</span></div><div class="stat"><b id="sa">—</b><span>average score</span></div><div class="stat"><b id="st">0</b><span id="stl">foods</span></div></div></section>
+<section id="browse"><div class="toolbar"><input id="search" class="search" type="search" placeholder="Search…"><select id="filter" class="filter"><option value="all">All</option><option value="no">Not completed</option><option value="yes">Completed</option><option value="9">Rated 9–10</option></select></div>
+<nav id="cities" class="cities"></nav><div class="sh"><h2 id="title">All foods</h2><span id="count"></span></div></section>
+<section id="grid" class="grid"></section><section id="high" class="high" hidden></section>
+<div class="actions"><button id="export">Export backup</button><label class="imp">Import backup<input id="import" type="file" accept="application/json"></label><button id="reset">Reset trip data</button></div>
+</main><dialog id="dlg"><div class="modal"><button class="close" id="x">×</button><h3 id="mn"></h3><div class="cn" id="mc"></div><p id="md"></p><div class="tip"><b id="mt">Tip</b><br><span id="mv"></span></div></div></dialog><div id="toast" class="toast"></div>
 <script>
-const FOODS = [{"city": "Beijing", "name": "Peking duck", "cn": "北京烤鸭", "desc": "Roast duck with lacquered, crisp skin and tender meat, usually carved tableside and wrapped in thin pancakes with spring onion, cucumber and sweet bean sauce.", "tip": "Book one proper duck meal; for two people, half a duck is often enough."}, {"city": "Beijing", "name": "Zhajiangmian", "cn": "炸酱面", "desc": "Thick wheat noodles topped with a savoury fried soybean-and-pork sauce, then mixed with fresh shredded vegetables. It is one of Beijing's classic everyday noodle dishes.", "tip": "A great casual lunch; mix everything thoroughly before eating."}, {"city": "Beijing", "name": "Jianbing", "cn": "煎饼", "desc": "A hot savoury breakfast crepe cooked on a griddle with egg, herbs and sauce, usually folded around a crisp cracker for crunch.", "tip": "Best from a busy breakfast stall in the morning."}, {"city": "Beijing", "name": "Copper-pot mutton hotpot", "cn": "涮羊肉", "desc": "Paper-thin slices of lamb are quickly swished in a light broth inside a traditional copper pot, then dipped in a rich sesame-based sauce.", "tip": "Very different from Sichuan hotpot: lighter, lamb-focused and traditionally Beijing."}, {"city": "Beijing", "name": "Jiaozi dumplings", "cn": "饺子", "desc": "Boiled or steamed dumplings filled with combinations such as pork, chive, cabbage, lamb or vegetables, usually eaten with vinegar and garlic.", "tip": "Order several fillings to share."}, {"city": "Beijing", "name": "Douzhi", "cn": "豆汁", "desc": "A traditional fermented mung-bean drink with a strong sour, funky flavour. It is one of Beijing's most notorious local tastes and is often served with fried dough rings.", "tip": "Try a small serving for the experience; this is very much a love-it-or-hate-it food."}, {"city": "Xi'an", "name": "Biang Biang noodles", "cn": "油泼扯面 / Biángbiáng面", "desc": "Very wide, hand-pulled wheat noodles dressed with chilli, garlic, vinegar and hot oil. Chewy, aromatic and one of Shaanxi's signature dishes.", "tip": "One of the highest-priority foods on the whole trip."}, {"city": "Xi'an", "name": "Roujiamo", "cn": "肉夹馍", "desc": "A crisp, dense flatbread split and stuffed with finely chopped slow-braised meat. Often described as a Chinese hamburger, but with a much older history.", "tip": "Perfect as a snack while exploring the city."}, {"city": "Xi'an", "name": "Yangrou paomo", "cn": "羊肉泡馍", "desc": "A deeply savoury lamb or mutton broth served with small pieces of dense flatbread. Traditionally, diners tear the bread into tiny pieces before the kitchen adds the soup.", "tip": "Give yourself time for the bread-tearing ritual; it is part of the experience."}, {"city": "Xi'an", "name": "Liangpi", "cn": "凉皮", "desc": "Cool, springy wheat or rice noodles dressed with chilli oil, vinegar, garlic, sesame and often cucumber or bean sprouts.", "tip": "Especially good as a light lunch alongside roujiamo."}, {"city": "Xi'an", "name": "Local dumplings", "cn": "饺子 / 饺子宴", "desc": "Xi'an has a strong dumpling tradition, from simple boiled dumplings to elaborate dumpling banquets with many shapes and fillings.", "tip": "A dumpling banquet is fun, but a small local shop is often better value."}, {"city": "Xi'an", "name": "Persimmon cake", "cn": "柿子饼", "desc": "A sweet Shaanxi snack made from persimmon dough, often filled with ingredients such as nuts or sesame and pan-fried until soft and fragrant.", "tip": "Look for freshly cooked ones around the old city rather than packaged versions."}, {"city": "Chengdu", "name": "Sichuan hotpot", "cn": "四川火锅", "desc": "A bubbling communal pot flavoured with dried chillies, Sichuan peppercorns and aromatics. Ingredients are cooked at the table and dipped into a personal sauce.", "tip": "Choose a split pot or mild spice level if you want to enjoy more than just the heat."}, {"city": "Chengdu", "name": "Mapo tofu", "cn": "麻婆豆腐", "desc": "Silky tofu in a glossy sauce of minced meat, fermented bean paste, chilli and Sichuan pepper. A proper Chengdu version balances heat, salt, richness and numbing pepper.", "tip": "Eat it with plain rice so you can appreciate the sauce."}, {"city": "Chengdu", "name": "Dan Dan noodles", "cn": "担担面", "desc": "A small bowl of noodles tossed with chilli oil, Sichuan pepper, preserved vegetables, sesame or peanut notes and often minced pork.", "tip": "Usually a snack-sized portion, so it is easy to combine with other dishes."}, {"city": "Chengdu", "name": "Chuan Chuan", "cn": "串串香", "desc": "A huge selection of meats, tofu, mushrooms and vegetables served on skewers and cooked in a spicy communal broth.", "tip": "Pick a few unfamiliar skewers as well as safe favourites; you normally pay by counting sticks."}, {"city": "Chengdu", "name": "Zhong dumplings", "cn": "钟水饺", "desc": "Soft pork dumplings dressed in a glossy sauce that combines chilli oil, garlic and a slightly sweet seasoned soy sauce.", "tip": "A good choice at a traditional Chengdu snack restaurant."}, {"city": "Chengdu", "name": "Sweet-water noodles", "cn": "甜水面", "desc": "Thick, chewy noodles coated in a sweet-savoury-spicy sauce with sesame, chilli and aromatic soy flavours.", "tip": "The texture is the star; order a small bowl as part of a snack crawl."}, {"city": "Chengdu", "name": "Rabbit head", "cn": "兔头", "desc": "A famous Chengdu snack of rabbit head braised and coated in intense chilli and Sichuan pepper seasoning. Diners pick the meat carefully from around the bone.", "tip": "Definitely optional, but one of the city's most distinctive food experiences."}, {"city": "Chongqing", "name": "Chongqing hotpot", "cn": "重庆火锅", "desc": "An intense beef-tallow hotpot packed with dried chilli and Sichuan pepper. Compared with Chengdu hotpot, it is often heavier, punchier and more aggressively spicy.", "tip": "Do this even if you already had hotpot in Chengdu; the styles are noticeably different."}, {"city": "Chongqing", "name": "Xiaomian", "cn": "重庆小面", "desc": "Chongqing's everyday spicy noodles, usually seasoned with chilli oil, Sichuan pepper, garlic, preserved vegetables and sesame or peanuts.", "tip": "Excellent breakfast or quick lunch; busy neighbourhood noodle shops are ideal."}, {"city": "Chongqing", "name": "Suanlafen", "cn": "酸辣粉", "desc": "Springy sweet-potato noodles in a hot-and-sour broth with chilli, vinegar, peanuts and preserved vegetables.", "tip": "Great street-food option when you want something fast and punchy."}, {"city": "Chongqing", "name": "Grilled fish", "cn": "烤鱼", "desc": "A whole fish is grilled, then served in a sizzling tray with chillies, aromatics, vegetables and a rich sauce that keeps cooking at the table.", "tip": "Best shared between two or more people."}, {"city": "Chongqing", "name": "Laziji", "cn": "辣子鸡", "desc": "Small pieces of crisp fried chicken tossed with a mountain of dried chillies, Sichuan pepper and aromatics.", "tip": "You hunt through the chillies for the chicken; the dish is meant to be fragrant as well as hot."}, {"city": "Chongqing", "name": "Shaokao barbecue", "cn": "烧烤", "desc": "Late-night Chinese barbecue: skewers of meat, vegetables, tofu and other ingredients grilled over heat and heavily seasoned with chilli, cumin and spices.", "tip": "Best after dark with a few different skewers ordered to share."}, {"city": "Zhangjiajie", "name": "Tujia Sanxia Guo", "cn": "三下锅", "desc": "A hearty local Tujia pot containing a mixture of meats, tofu and vegetables cooked together with chilli and savoury seasonings.", "tip": "This is the signature Zhangjiajie dish to prioritise."}, {"city": "Zhangjiajie", "name": "Tujia smoked pork", "cn": "土家腊肉", "desc": "Pork that has been cured and smoked, giving it a salty, concentrated flavour. It is commonly stir-fried with vegetables or chillies.", "tip": "Good with rice after a long day in the national park."}, {"city": "Zhangjiajie", "name": "Hezha", "cn": "合渣", "desc": "A rustic Tujia dish made from ground soybeans cooked into a soft, comforting mixture, often with greens. It is mild compared with many dishes on this route.", "tip": "Useful as a break from spicy food."}, {"city": "Zhangjiajie", "name": "Sour fish / sour dishes", "cn": "酸鱼 / 酸味菜", "desc": "The wider Hunan and minority cuisines of the region make strong use of sour, pickled and fermented flavours, including fish and vegetable dishes.", "tip": "Ask the restaurant what sour speciality they make best that day."}, {"city": "Fenghuang", "name": "Blood duck", "cn": "血粑鸭", "desc": "Fenghuang's signature dish: duck cooked with chillies and pieces of blood rice cake, producing a rich, savoury and distinctly local Hunan-style dish.", "tip": "The English name sounds intimidating, but this is the food to try in Fenghuang."}, {"city": "Fenghuang", "name": "Miao sour fish / sour soup", "cn": "酸汤鱼", "desc": "Fish cooked in a tangy, spicy sour broth associated with Miao cuisine. The sourness typically comes from fermented or pickled ingredients.", "tip": "A good shared dinner beside the river."}, {"city": "Fenghuang", "name": "Smoked pork", "cn": "腊肉", "desc": "Cured and smoked pork is common across the Tujia and Miao areas, often stir-fried with local chillies, vegetables or preserved ingredients.", "tip": "Compare it with the smoked pork you try in Zhangjiajie."}, {"city": "Fenghuang", "name": "Rice tofu", "cn": "米豆腐", "desc": "A soft, slippery local snack made from rice rather than soy, usually cut into pieces and served with chilli, vinegar and savoury toppings.", "tip": "Good for a quick snack while wandering the old town."}, {"city": "Fenghuang", "name": "Ginger sweets", "cn": "姜糖", "desc": "Traditional chewy ginger candy made and stretched in shops around the ancient town, with a sweet, warming ginger flavour.", "tip": "Try a fresh sample before buying a bag."}, {"city": "Guilin", "name": "Guilin rice noodles", "cn": "桂林米粉", "desc": "The city's classic breakfast: rice noodles topped with braised meat, peanuts, pickled vegetables and a concentrated savoury sauce or broth.", "tip": "Eat them for breakfast at a busy local noodle shop."}, {"city": "Guilin", "name": "Gongcheng oil tea", "cn": "油茶", "desc": "A distinctive savoury tea soup made by pounding and frying tea leaves with ginger and other aromatics, then serving the brew with crunchy accompaniments.", "tip": "Unusual and slightly bitter; worth trying once for its strong local identity."}, {"city": "Guilin", "name": "Lipu taro pork", "cn": "荔浦芋扣肉", "desc": "Alternating slices of rich pork belly and fragrant Lipu taro are steamed together until soft, creating a sweet-savoury, deeply comforting dish.", "tip": "Best shared because it is quite rich."}, {"city": "Yangshuo", "name": "Beer fish", "cn": "啤酒鱼", "desc": "Yangshuo's signature dish: freshwater fish cooked with local beer, tomatoes, peppers, garlic and ginger until the sauce becomes rich and aromatic.", "tip": "Choose the fish carefully and confirm the price by weight before ordering."}, {"city": "Yangshuo", "name": "Stuffed river snails", "cn": "田螺酿", "desc": "River-snail shells filled with a seasoned mixture, commonly minced pork, snail meat and herbs, then cooked in a savoury sauce.", "tip": "A very local dish and a good one to share alongside beer fish."}];
-const STORAGE_KEY = "china-food-passport-v1";
-let state = loadState();
-let activeCity = "All";
-let photoDB = null;
-
-function idForFood(f) {
-  return (f.city + "::" + f.name).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
-}
-function blankEntry() { return {tried:false, score:"", notes:""}; }
-function loadState() {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-    return parsed && typeof parsed === "object" ? parsed : {};
-  } catch { return {}; }
-}
-function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  updateStats();
-}
-function entry(id) {
-  if (!state[id]) state[id] = blankEntry();
-  return state[id];
-}
-function showToast(msg) {
-  const t = document.getElementById("toast");
-  t.textContent = msg; t.classList.add("show");
-  clearTimeout(showToast.timer);
-  showToast.timer = setTimeout(()=>t.classList.remove("show"),1800);
-}
-
-function openPhotoDB() {
-  return new Promise((resolve,reject)=>{
-    const req = indexedDB.open("china-food-passport-photos",1);
-    req.onupgradeneeded = () => {
-      const db = req.result;
-      if (!db.objectStoreNames.contains("photos")) db.createObjectStore("photos");
-    };
-    req.onsuccess = () => { photoDB = req.result; resolve(photoDB); };
-    req.onerror = () => reject(req.error);
-  });
-}
-function photoGet(id) {
-  return new Promise((resolve,reject)=>{
-    if (!photoDB) return resolve(null);
-    const tx = photoDB.transaction("photos","readonly");
-    const req = tx.objectStore("photos").get(id);
-    req.onsuccess = ()=>resolve(req.result || null);
-    req.onerror = ()=>reject(req.error);
-  });
-}
-function photoPut(id, blob) {
-  return new Promise((resolve,reject)=>{
-    const tx = photoDB.transaction("photos","readwrite");
-    tx.objectStore("photos").put(blob,id);
-    tx.oncomplete = ()=>resolve();
-    tx.onerror = ()=>reject(tx.error);
-  });
-}
-function photoDelete(id) {
-  return new Promise((resolve,reject)=>{
-    const tx = photoDB.transaction("photos","readwrite");
-    tx.objectStore("photos").delete(id);
-    tx.oncomplete = ()=>resolve();
-    tx.onerror = ()=>reject(tx.error);
-  });
-}
-function fileToCompressedBlob(file) {
-  return new Promise((resolve,reject)=>{
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.onload = () => {
-      try {
-        const max = 1400;
-        let w=img.width, h=img.height;
-        const scale = Math.min(1, max/Math.max(w,h));
-        w=Math.max(1,Math.round(w*scale)); h=Math.max(1,Math.round(h*scale));
-        const c=document.createElement("canvas"); c.width=w; c.height=h;
-        c.getContext("2d").drawImage(img,0,0,w,h);
-        c.toBlob(b=>{ URL.revokeObjectURL(url); b ? resolve(b) : reject(new Error("Could not process photo")); }, "image/jpeg", .82);
-      } catch(e) { URL.revokeObjectURL(url); reject(e); }
-    };
-    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Could not read image")); };
-    img.src=url;
-  });
-}
-
-const cityOrder = ["All","Beijing","Xi'an","Chengdu","Chongqing","Zhangjiajie","Fenghuang","Guilin","Yangshuo"];
-
-function renderCities() {
-  const wrap=document.getElementById("cities"); wrap.innerHTML="";
-  cityOrder.forEach(city=>{
-    const b=document.createElement("button");
-    b.type="button"; b.className="chip"+(city===activeCity?" active":"");
-    b.textContent=city;
-    b.addEventListener("click",()=>{activeCity=city; renderCities(); render();});
-    wrap.appendChild(b);
-  });
-}
-
-function filteredFoods() {
-  const q=document.getElementById("search").value.trim().toLowerCase();
-  const filter=document.getElementById("filter").value;
-  return FOODS.filter(f=>{
-    const id=idForFood(f), e=entry(id);
-    if (activeCity!=="All" && f.city!==activeCity) return false;
-    if (q && !(f.name.toLowerCase().includes(q) || f.cn.toLowerCase().includes(q) || f.city.toLowerCase().includes(q))) return false;
-    if (filter==="untried" && e.tried) return false;
-    if (filter==="tried" && !e.tried) return false;
-    if (filter==="rated9" && !(Number(e.score)>=9)) return false;
-    return true;
-  });
-}
-
-async function render() {
-  const grid=document.getElementById("foodGrid");
-  const items=filteredFoods();
-  document.getElementById("viewTitle").textContent = activeCity==="All" ? "All foods" : activeCity;
-  document.getElementById("viewCount").textContent = items.length + (items.length===1?" dish":" dishes");
-  grid.innerHTML="";
-  if(!items.length) {
-    grid.innerHTML='<div class="empty">No dishes match this view.</div>';
-    return;
-  }
-  for (const f of items) {
-    const id=idForFood(f), e=entry(id);
-    const card=document.createElement("article");
-    card.className="card"+(e.tried?" tried":"");
-    card.dataset.id=id;
-
-    const main=document.createElement("div"); main.className="card-main";
-    const photo=document.createElement("div"); photo.className="photo";
-    photo.innerHTML='<div class="photo-placeholder">📷</div><small>Tap photo to add</small>';
-    const currentPhoto = await photoGet(id).catch(()=>null);
-    if(currentPhoto) {
-      const img=document.createElement("img"); img.alt="Photo of "+f.name; img.src=URL.createObjectURL(currentPhoto);
-      photo.appendChild(img);
-      photo.querySelector("small").textContent="Tap to replace";
-    }
-    const fileInput=document.createElement("input");
-    fileInput.type="file"; fileInput.accept="image/*"; fileInput.hidden=true;
-    fileInput.addEventListener("change", async ()=>{
-      const file=fileInput.files && fileInput.files[0];
-      if(!file) return;
-      try {
-        const blob=await fileToCompressedBlob(file);
-        await photoPut(id,blob);
-        showToast("Photo saved");
-        render();
-      } catch { showToast("Could not save that photo"); }
-    });
-    photo.addEventListener("click",()=>fileInput.click());
-    photo.appendChild(fileInput);
-
-    const body=document.createElement("div"); body.className="body";
-    const top=document.createElement("div"); top.className="toprow";
-    const titleWrap=document.createElement("div");
-    titleWrap.innerHTML='<div class="name"></div><div class="cn"></div>';
-    titleWrap.querySelector(".name").textContent=f.name;
-    titleWrap.querySelector(".cn").textContent=f.cn;
-    const check=document.createElement("button"); check.type="button"; check.className="check"+(e.tried?" on":""); check.setAttribute("aria-label",(e.tried?"Mark not tried: ":"Mark tried: ")+f.name); check.textContent=e.tried?"✓":"";
-    check.addEventListener("click",()=>{e.tried=!e.tried; state[id]=e; saveState(); render();});
-    top.append(titleWrap,check);
-
-    const controls=document.createElement("div"); controls.className="controls";
-    const score=document.createElement("select"); score.className="score"; score.setAttribute("aria-label","Score "+f.name+" out of 10");
-    score.innerHTML='<option value="">Score /10</option>'+Array.from({length:10},(_,i)=>'<option value="'+(i+1)+'">'+(i+1)+'/10</option>').join("");
-    score.value=e.score || "";
-    score.addEventListener("change",()=>{e.score=score.value; if(score.value) e.tried=true; state[id]=e; saveState(); render();});
-
-    const about=document.createElement("button"); about.type="button"; about.className="small-btn primary"; about.textContent="What is it?";
-    about.addEventListener("click",()=>openDescription(f));
-
-    const notesBtn=document.createElement("button"); notesBtn.type="button"; notesBtn.className="small-btn"; notesBtn.textContent=e.notes?"Edit notes":"Add notes";
-    const notes=document.createElement("textarea"); notes.className="notes"; notes.placeholder="Where did you eat it? What did you think?";
-    notes.value=e.notes || "";
-    notesBtn.addEventListener("click",()=>{notes.classList.toggle("open"); if(notes.classList.contains("open")) notes.focus();});
-    notes.addEventListener("change",()=>{e.notes=notes.value.trim(); state[id]=e; saveState(); notesBtn.textContent=e.notes?"Edit notes":"Add notes";});
-    controls.append(score,about,notesBtn,notes);
-    body.append(top,controls);
-    main.append(photo,body);
-    card.append(main);
-    const foot=document.createElement("div"); foot.className="card-footer"; foot.innerHTML='<span class="city-tag"></span>';
-    foot.querySelector(".city-tag").textContent=f.city;
-    card.append(foot);
-    grid.append(card);
-  }
-}
-
-function openDescription(f) {
-  document.getElementById("modalName").textContent=f.name;
-  document.getElementById("modalCn").textContent=f.cn;
-  document.getElementById("modalDesc").textContent=f.desc;
-  document.getElementById("modalTip").textContent=f.tip;
-  const dlg=document.getElementById("descDialog");
-  if(typeof dlg.showModal==="function") dlg.showModal(); else dlg.setAttribute("open","");
-}
-function updateStats() {
-  const ids=FOODS.map(idForFood);
-  const entries=ids.map(id=>state[id]||blankEntry());
-  const tried=entries.filter(e=>e.tried).length;
-  const scores=entries.map(e=>Number(e.score)).filter(n=>Number.isFinite(n)&&n>0);
-  const avg=scores.length ? (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1) : "—";
-  const pct=Math.round(tried/FOODS.length*100);
-  document.getElementById("progressText").textContent=tried+" of "+FOODS.length+" tried";
-  document.getElementById("progressPct").textContent=pct+"%";
-  document.getElementById("progressBar").style.width=pct+"%";
-  document.getElementById("statTried").textContent=tried;
-  document.getElementById("statScore").textContent=avg;
-}
-
-async function blobToDataURL(blob) {
-  return new Promise((resolve,reject)=>{
-    const r=new FileReader(); r.onload=()=>resolve(r.result); r.onerror=()=>reject(r.error); r.readAsDataURL(blob);
-  });
-}
-async function dataURLToBlob(dataURL) {
-  const res=await fetch(dataURL); return await res.blob();
-}
-async function exportBackup() {
-  const photos={};
-  for (const f of FOODS) {
-    const id=idForFood(f), blob=await photoGet(id).catch(()=>null);
-    if(blob) photos[id]=await blobToDataURL(blob);
-  }
-  const payload={version:1, exportedAt:new Date().toISOString(), state, photos};
-  const blob=new Blob([JSON.stringify(payload)],{type:"application/json"});
-  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="china-food-passport-backup.json"; a.click();
-  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
-  showToast("Backup exported");
-}
-async function importBackup(file) {
-  try {
-    const payload=JSON.parse(await file.text());
-    if(!payload || typeof payload.state!=="object") throw new Error();
-    state=payload.state; saveState();
-    if(payload.photos && typeof payload.photos==="object") {
-      for (const [id,data] of Object.entries(payload.photos)) {
-        if(typeof data==="string" && data.startsWith("data:")) await photoPut(id,await dataURLToBlob(data));
-      }
-    }
-    showToast("Backup imported");
-    render();
-  } catch { showToast("That backup file could not be imported"); }
-}
-
-document.getElementById("search").addEventListener("input",render);
-document.getElementById("filter").addEventListener("change",render);
-document.getElementById("closeDialog").addEventListener("click",()=>document.getElementById("descDialog").close());
-document.getElementById("exportBtn").addEventListener("click",exportBackup);
-document.getElementById("importInput").addEventListener("change",e=>{const f=e.target.files&&e.target.files[0]; if(f) importBackup(f); e.target.value="";});
-document.getElementById("resetBtn").addEventListener("click",async()=>{
-  if(!confirm("Reset every checkbox, score, note and photo? This cannot be undone unless you exported a backup.")) return;
-  state={}; localStorage.removeItem(STORAGE_KEY);
-  if(photoDB) {
-    await new Promise((resolve,reject)=>{const tx=photoDB.transaction("photos","readwrite"); tx.objectStore("photos").clear(); tx.oncomplete=resolve; tx.onerror=()=>reject(tx.error);});
-  }
-  updateStats(); render(); showToast("Trip data reset");
-});
-
-(async function init() {
-  try { await openPhotoDB(); } catch { showToast("Photos may not persist in this browser"); }
-  renderCities(); updateStats(); render();
-  if("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-    navigator.serviceWorker.register("./sw.js").catch(()=>{});
-  }
-})();
-</script>
-</body>
-</html>
+const F=[{"city": "Beijing", "name": "Peking duck", "cn": "北京烤鸭", "desc": "Roast duck with lacquered, crisp skin and tender meat, usually carved tableside and wrapped in thin pancakes with spring onion, cucumber and sweet bean sauce.", "tip": "Book one proper duck meal; for two people, half a duck is often enough."}, {"city": "Beijing", "name": "Zhajiangmian", "cn": "炸酱面", "desc": "Thick wheat noodles topped with a savoury fried soybean-and-pork sauce, then mixed with fresh shredded vegetables. It is one of Beijing's classic everyday noodle dishes.", "tip": "A great casual lunch; mix everything thoroughly before eating."}, {"city": "Beijing", "name": "Jianbing", "cn": "煎饼", "desc": "A hot savoury breakfast crepe cooked on a griddle with egg, herbs and sauce, usually folded around a crisp cracker for crunch.", "tip": "Best from a busy breakfast stall in the morning."}, {"city": "Beijing", "name": "Copper-pot mutton hotpot", "cn": "涮羊肉", "desc": "Paper-thin slices of lamb are quickly swished in a light broth inside a traditional copper pot, then dipped in a rich sesame-based sauce.", "tip": "Very different from Sichuan hotpot: lighter, lamb-focused and traditionally Beijing."}, {"city": "Beijing", "name": "Jiaozi dumplings", "cn": "饺子", "desc": "Boiled or steamed dumplings filled with combinations such as pork, chive, cabbage, lamb or vegetables, usually eaten with vinegar and garlic.", "tip": "Order several fillings to share."}, {"city": "Beijing", "name": "Douzhi", "cn": "豆汁", "desc": "A traditional fermented mung-bean drink with a strong sour, funky flavour. It is one of Beijing's most notorious local tastes and is often served with fried dough rings.", "tip": "Try a small serving for the experience; this is very much a love-it-or-hate-it food."}, {"city": "Xi'an", "name": "Biang Biang noodles", "cn": "油泼扯面 / Biángbiáng面", "desc": "Very wide, hand-pulled wheat noodles dressed with chilli, garlic, vinegar and hot oil. Chewy, aromatic and one of Shaanxi's signature dishes.", "tip": "One of the highest-priority foods on the whole trip."}, {"city": "Xi'an", "name": "Roujiamo", "cn": "肉夹馍", "desc": "A crisp, dense flatbread split and stuffed with finely chopped slow-braised meat. Often described as a Chinese hamburger, but with a much older history.", "tip": "Perfect as a snack while exploring the city."}, {"city": "Xi'an", "name": "Yangrou paomo", "cn": "羊肉泡馍", "desc": "A deeply savoury lamb or mutton broth served with small pieces of dense flatbread. Traditionally, diners tear the bread into tiny pieces before the kitchen adds the soup.", "tip": "Give yourself time for the bread-tearing ritual; it is part of the experience."}, {"city": "Xi'an", "name": "Liangpi", "cn": "凉皮", "desc": "Cool, springy wheat or rice noodles dressed with chilli oil, vinegar, garlic, sesame and often cucumber or bean sprouts.", "tip": "Especially good as a light lunch alongside roujiamo."}, {"city": "Xi'an", "name": "Local dumplings", "cn": "饺子 / 饺子宴", "desc": "Xi'an has a strong dumpling tradition, from simple boiled dumplings to elaborate dumpling banquets with many shapes and fillings.", "tip": "A dumpling banquet is fun, but a small local shop is often better value."}, {"city": "Xi'an", "name": "Persimmon cake", "cn": "柿子饼", "desc": "A sweet Shaanxi snack made from persimmon dough, often filled with ingredients such as nuts or sesame and pan-fried until soft and fragrant.", "tip": "Look for freshly cooked ones around the old city rather than packaged versions."}, {"city": "Chengdu", "name": "Sichuan hotpot", "cn": "四川火锅", "desc": "A bubbling communal pot flavoured with dried chillies, Sichuan peppercorns and aromatics. Ingredients are cooked at the table and dipped into a personal sauce.", "tip": "Choose a split pot or mild spice level if you want to enjoy more than just the heat."}, {"city": "Chengdu", "name": "Mapo tofu", "cn": "麻婆豆腐", "desc": "Silky tofu in a glossy sauce of minced meat, fermented bean paste, chilli and Sichuan pepper. A proper Chengdu version balances heat, salt, richness and numbing pepper.", "tip": "Eat it with plain rice so you can appreciate the sauce."}, {"city": "Chengdu", "name": "Dan Dan noodles", "cn": "担担面", "desc": "A small bowl of noodles tossed with chilli oil, Sichuan pepper, preserved vegetables, sesame or peanut notes and often minced pork.", "tip": "Usually a snack-sized portion, so it is easy to combine with other dishes."}, {"city": "Chengdu", "name": "Chuan Chuan", "cn": "串串香", "desc": "A huge selection of meats, tofu, mushrooms and vegetables served on skewers and cooked in a spicy communal broth.", "tip": "Pick a few unfamiliar skewers as well as safe favourites; you normally pay by counting sticks."}, {"city": "Chengdu", "name": "Zhong dumplings", "cn": "钟水饺", "desc": "Soft pork dumplings dressed in a glossy sauce that combines chilli oil, garlic and a slightly sweet seasoned soy sauce.", "tip": "A good choice at a traditional Chengdu snack restaurant."}, {"city": "Chengdu", "name": "Sweet-water noodles", "cn": "甜水面", "desc": "Thick, chewy noodles coated in a sweet-savoury-spicy sauce with sesame, chilli and aromatic soy flavours.", "tip": "The texture is the star; order a small bowl as part of a snack crawl."}, {"city": "Chengdu", "name": "Rabbit head", "cn": "兔头", "desc": "A famous Chengdu snack of rabbit head braised and coated in intense chilli and Sichuan pepper seasoning. Diners pick the meat carefully from around the bone.", "tip": "Definitely optional, but one of the city's most distinctive food experiences."}, {"city": "Chongqing", "name": "Chongqing hotpot", "cn": "重庆火锅", "desc": "An intense beef-tallow hotpot packed with dried chilli and Sichuan pepper. Compared with Chengdu hotpot, it is often heavier, punchier and more aggressively spicy.", "tip": "Do this even if you already had hotpot in Chengdu; the styles are noticeably different."}, {"city": "Chongqing", "name": "Xiaomian", "cn": "重庆小面", "desc": "Chongqing's everyday spicy noodles, usually seasoned with chilli oil, Sichuan pepper, garlic, preserved vegetables and sesame or peanuts.", "tip": "Excellent breakfast or quick lunch; busy neighbourhood noodle shops are ideal."}, {"city": "Chongqing", "name": "Suanlafen", "cn": "酸辣粉", "desc": "Springy sweet-potato noodles in a hot-and-sour broth with chilli, vinegar, peanuts and preserved vegetables.", "tip": "Great street-food option when you want something fast and punchy."}, {"city": "Chongqing", "name": "Grilled fish", "cn": "烤鱼", "desc": "A whole fish is grilled, then served in a sizzling tray with chillies, aromatics, vegetables and a rich sauce that keeps cooking at the table.", "tip": "Best shared between two or more people."}, {"city": "Chongqing", "name": "Laziji", "cn": "辣子鸡", "desc": "Small pieces of crisp fried chicken tossed with a mountain of dried chillies, Sichuan pepper and aromatics.", "tip": "You hunt through the chillies for the chicken; the dish is meant to be fragrant as well as hot."}, {"city": "Chongqing", "name": "Shaokao barbecue", "cn": "烧烤", "desc": "Late-night Chinese barbecue: skewers of meat, vegetables, tofu and other ingredients grilled over heat and heavily seasoned with chilli, cumin and spices.", "tip": "Best after dark with a few different skewers ordered to share."}, {"city": "Zhangjiajie", "name": "Tujia Sanxia Guo", "cn": "三下锅", "desc": "A hearty local Tujia pot containing a mixture of meats, tofu and vegetables cooked together with chilli and savoury seasonings.", "tip": "This is the signature Zhangjiajie dish to prioritise."}, {"city": "Zhangjiajie", "name": "Tujia smoked pork", "cn": "土家腊肉", "desc": "Pork that has been cured and smoked, giving it a salty, concentrated flavour. It is commonly stir-fried with vegetables or chillies.", "tip": "Good with rice after a long day in the national park."}, {"city": "Zhangjiajie", "name": "Hezha", "cn": "合渣", "desc": "A rustic Tujia dish made from ground soybeans cooked into a soft, comforting mixture, often with greens. It is mild compared with many dishes on this route.", "tip": "Useful as a break from spicy food."}, {"city": "Zhangjiajie", "name": "Sour fish / sour dishes", "cn": "酸鱼 / 酸味菜", "desc": "The wider Hunan and minority cuisines of the region make strong use of sour, pickled and fermented flavours, including fish and vegetable dishes.", "tip": "Ask the restaurant what sour speciality they make best that day."}, {"city": "Fenghuang", "name": "Blood duck", "cn": "血粑鸭", "desc": "Fenghuang's signature dish: duck cooked with chillies and pieces of blood rice cake, producing a rich, savoury and distinctly local Hunan-style dish.", "tip": "The English name sounds intimidating, but this is the food to try in Fenghuang."}, {"city": "Fenghuang", "name": "Miao sour fish / sour soup", "cn": "酸汤鱼", "desc": "Fish cooked in a tangy, spicy sour broth associated with Miao cuisine. The sourness typically comes from fermented or pickled ingredients.", "tip": "A good shared dinner beside the river."}, {"city": "Fenghuang", "name": "Smoked pork", "cn": "腊肉", "desc": "Cured and smoked pork is common across the Tujia and Miao areas, often stir-fried with local chillies, vegetables or preserved ingredients.", "tip": "Compare it with the smoked pork you try in Zhangjiajie."}, {"city": "Fenghuang", "name": "Rice tofu", "cn": "米豆腐", "desc": "A soft, slippery local snack made from rice rather than soy, usually cut into pieces and served with chilli, vinegar and savoury toppings.", "tip": "Good for a quick snack while wandering the old town."}, {"city": "Fenghuang", "name": "Ginger sweets", "cn": "姜糖", "desc": "Traditional chewy ginger candy made and stretched in shops around the ancient town, with a sweet, warming ginger flavour.", "tip": "Try a fresh sample before buying a bag."}, {"city": "Guilin", "name": "Guilin rice noodles", "cn": "桂林米粉", "desc": "The city's classic breakfast: rice noodles topped with braised meat, peanuts, pickled vegetables and a concentrated savoury sauce or broth.", "tip": "Eat them for breakfast at a busy local noodle shop."}, {"city": "Guilin", "name": "Gongcheng oil tea", "cn": "油茶", "desc": "A distinctive savoury tea soup made by pounding and frying tea leaves with ginger and other aromatics, then serving the brew with crunchy accompaniments.", "tip": "Unusual and slightly bitter; worth trying once for its strong local identity."}, {"city": "Guilin", "name": "Lipu taro pork", "cn": "荔浦芋扣肉", "desc": "Alternating slices of rich pork belly and fragrant Lipu taro are steamed together until soft, creating a sweet-savoury, deeply comforting dish.", "tip": "Best shared because it is quite rich."}, {"city": "Yangshuo", "name": "Beer fish", "cn": "啤酒鱼", "desc": "Yangshuo's signature dish: freshwater fish cooked with local beer, tomatoes, peppers, garlic and ginger until the sauce becomes rich and aromatic.", "tip": "Choose the fish carefully and confirm the price by weight before ordering."}, {"city": "Yangshuo", "name": "Stuffed river snails", "cn": "田螺酿", "desc": "River-snail shells filled with a seasoned mixture, commonly minced pork, snail meat and herbs, then cooked in a savoury sauce.", "tip": "A very local dish and a good one to share alongside beer fish."}],A=[{"city": "Beijing", "name": "Forbidden City", "cn": "故宫博物院", "priority": "Must-see", "desc": "The vast former imperial palace at the heart of Beijing, filled with ceremonial halls, courtyards and treasures from the Ming and Qing dynasties.", "tip": "Allow several hours; exiting north works well if you want to continue to Jingshan Park."}, {"city": "Beijing", "name": "Mutianyu Great Wall", "cn": "慕田峪长城", "priority": "Must-see", "desc": "A scenic and well-preserved Great Wall section in the mountains north of Beijing, with restored watchtowers and dramatic views.", "tip": "Cable or chairlift up and toboggan down is a fun combination in good weather."}, {"city": "Beijing", "name": "Temple of Heaven", "cn": "天坛", "priority": "High", "desc": "A major imperial ritual complex, best known for the circular Hall of Prayer for Good Harvests.", "tip": "Morning is especially atmospheric when locals exercise and socialise in the park."}, {"city": "Beijing", "name": "Summer Palace", "cn": "颐和园", "priority": "High", "desc": "A vast imperial garden of lakes, pavilions, bridges and hillside temples centred on Kunming Lake.", "tip": "Allow at least half a day if you want to explore beyond the main waterfront."}, {"city": "Beijing", "name": "Tiananmen Square", "cn": "天安门广场", "priority": "High", "desc": "Beijing's monumental central square, directly south of the Forbidden City and surrounded by major national landmarks.", "tip": "Leave buffer time for security and access arrangements."}, {"city": "Beijing", "name": "Hutongs & Shichahai", "cn": "胡同 / 什刹海", "priority": "High", "desc": "Historic lanes, courtyard neighbourhoods and lakes that show a slower, more lived-in side of Beijing.", "tip": "Best explored on foot without a rigid route."}, {"city": "Beijing", "name": "Jingshan Park", "cn": "景山公园", "priority": "High", "desc": "A hill immediately north of the Forbidden City with one of the best panoramic views over the palace roofs.", "tip": "Excellent near sunset when visibility is good."}, {"city": "Beijing", "name": "Lama Temple", "cn": "雍和宫", "priority": "Medium", "desc": "A major Tibetan Buddhist temple complex with incense-filled courtyards and ornate halls.", "tip": "Easy to combine with nearby hutongs and Wudaoying."}, {"city": "Xi'an", "name": "Terracotta Army", "cn": "秦始皇兵马俑", "priority": "Must-see", "desc": "Thousands of life-sized clay soldiers, horses and chariots created for the mausoleum of China's first emperor.", "tip": "Go early if possible and allow time for travel from central Xi'an."}, {"city": "Xi'an", "name": "Xi'an City Wall", "cn": "西安城墙", "priority": "Must-see", "desc": "One of China's best-preserved ancient city walls, forming a complete circuit around the old centre.", "tip": "Late afternoon into sunset is ideal; cycling part of it is memorable."}, {"city": "Xi'an", "name": "Muslim Quarter", "cn": "回民街", "priority": "High", "desc": "A dense historic area of food stalls, restaurants and lanes reflecting Xi'an's Hui Muslim community.", "tip": "Go hungry and treat it as a food wander rather than one restaurant meal."}, {"city": "Xi'an", "name": "Bell & Drum Towers", "cn": "钟楼 / 鼓楼", "priority": "High", "desc": "Two landmark towers at the centre of the old city, especially striking after dark.", "tip": "Combine them with the Muslim Quarter."}, {"city": "Xi'an", "name": "Great Mosque", "cn": "西安清真大寺", "priority": "High", "desc": "A historic mosque blending Islamic religious use with traditional Chinese architecture and courtyards.", "tip": "A quieter contrast to the surrounding food streets."}, {"city": "Xi'an", "name": "Big Wild Goose Pagoda", "cn": "大雁塔", "priority": "Medium", "desc": "A Tang-dynasty Buddhist pagoda associated with Xuanzang and the transmission of Buddhist texts to China.", "tip": "The surrounding area is lively in the evening."}, {"city": "Chengdu", "name": "Giant Panda Breeding Base", "cn": "成都大熊猫繁育研究基地", "priority": "Must-see", "desc": "Chengdu's famous panda conservation and breeding centre, with giant pandas and red pandas.", "tip": "Arrive early; pandas are generally more active in the cooler morning."}, {"city": "Chengdu", "name": "People's Park & Tea House", "cn": "人民公园", "priority": "Must-see", "desc": "A central park famous for tea drinking, mahjong, relaxed local life and people-watching.", "tip": "Sit down for tea and deliberately do very little for an hour."}, {"city": "Chengdu", "name": "Wenshu Monastery", "cn": "文殊院", "priority": "High", "desc": "A peaceful Buddhist monastery complex with courtyards, gardens and traditional architecture.", "tip": "Combine it with nearby snack streets and a slow wander."}, {"city": "Chengdu", "name": "Kuanzhai Alley", "cn": "宽窄巷子", "priority": "High", "desc": "Restored historic lanes lined with teahouses, snacks, shops and traditional-style buildings.", "tip": "Touristy but worthwhile for atmosphere, especially at a quieter time."}, {"city": "Chengdu", "name": "Jinli & Wuhou Shrine", "cn": "锦里 / 武侯祠", "priority": "High", "desc": "A historic-style pedestrian street beside a major shrine connected with the Three Kingdoms period.", "tip": "Best in late afternoon into evening for lights and food stalls."}, {"city": "Chongqing", "name": "Hongya Cave", "cn": "洪崖洞", "priority": "Must-see", "desc": "A dramatic multi-level riverside complex of stilt-style buildings and lights, one of Chongqing's signature night views.", "tip": "See it from outside as well as walking through the complex."}, {"city": "Chongqing", "name": "Liziba Monorail", "cn": "李子坝", "priority": "Must-see", "desc": "A monorail station famously integrated through a high-rise building, emblematic of Chongqing's vertical cityscape.", "tip": "Use the viewing area below for the classic angle."}, {"city": "Chongqing", "name": "Yangtze River Cableway", "cn": "长江索道", "priority": "High", "desc": "A cable car crossing the Yangtze with broad views over the skyline and steep riverbanks.", "tip": "Night views are excellent but queues can be longer."}, {"city": "Chongqing", "name": "Shibati / Eighteen Steps", "cn": "十八梯", "priority": "High", "desc": "A rebuilt historic hillside district of steep lanes, stairs, shops and layered city views.", "tip": "Combine it with Jiefangbei on foot."}, {"city": "Chongqing", "name": "Jiefangbei", "cn": "解放碑", "priority": "High", "desc": "The central pedestrian and commercial core of downtown Chongqing.", "tip": "Best used as a base for evening wandering rather than a standalone sight."}, {"city": "Chongqing", "name": "Ciqikou Ancient Town", "cn": "磁器口古镇", "priority": "Medium", "desc": "A historic town area with old lanes, temples, snack shops and traditional-style storefronts.", "tip": "Go early if you want it to feel less crowded and commercial."}, {"city": "Zhangjiajie", "name": "Yuanjiajie", "cn": "袁家界", "priority": "Must-see", "desc": "The sandstone pillar landscape most associated with Zhangjiajie and the famous 'Avatar mountains'.", "tip": "Make this a central part of one full Wulingyuan day."}, {"city": "Zhangjiajie", "name": "Tianzi Mountain", "cn": "天子山", "priority": "Must-see", "desc": "A high scenic area with sweeping views across dense clusters of sandstone pillars and valleys.", "tip": "Weather changes quickly; cloud can be atmospheric but can hide views."}, {"city": "Zhangjiajie", "name": "Bailong Elevator", "cn": "百龙天梯", "priority": "High", "desc": "A huge outdoor glass elevator built into the cliffs, linking the valley floor to the high plateau.", "tip": "It is as useful as transport as it is an attraction."}, {"city": "Zhangjiajie", "name": "Golden Whip Stream", "cn": "金鞭溪", "priority": "High", "desc": "A scenic valley walk beneath the sandstone peaks, following a clear stream through forest.", "tip": "Good for a quieter, ground-level contrast to the high viewpoints."}, {"city": "Zhangjiajie", "name": "Tianmen Mountain", "cn": "天门山", "priority": "Must-see", "desc": "A separate mountain attraction near Zhangjiajie city, famous for its cableway, cliff walks and Tianmen Cave.", "tip": "Treat this as its own day, separate from Wulingyuan."}, {"city": "Zhangjiajie", "name": "Tianmen Cave & 999 Steps", "cn": "天门洞", "priority": "Must-see", "desc": "The enormous natural arch known as Heaven's Gate, reached by the famous 999-step stairway or alternative routes.", "tip": "The stairs are steep; use the easier route if weather or tired legs make sense."}, {"city": "Fenghuang", "name": "Fenghuang Ancient Town", "cn": "凤凰古城", "priority": "Must-see", "desc": "A photogenic riverside old town of wooden houses, bridges and narrow lanes with Miao and Tujia influences.", "tip": "The atmosphere is best after dark and early the next morning."}, {"city": "Fenghuang", "name": "Tuojiang River", "cn": "沱江", "priority": "High", "desc": "The river through Fenghuang's historic centre, lined by wooden stilt houses and crossed by bridges and stepping stones.", "tip": "Walk both banks for different views."}, {"city": "Fenghuang", "name": "Hongqiao Bridge", "cn": "虹桥", "priority": "High", "desc": "A covered bridge and one of Fenghuang's best-known landmarks, with views along the river and rooftops.", "tip": "Especially atmospheric when the evening lights come on."}, {"city": "Guilin", "name": "Li River", "cn": "漓江", "priority": "Must-see", "desc": "The famous limestone-karst river landscape between Guilin and Yangshuo, one of southern China's defining scenic experiences.", "tip": "Choose a cruise or smaller-boat section that fits your wider route."}, {"city": "Guilin", "name": "Elephant Trunk Hill", "cn": "象鼻山", "priority": "Medium", "desc": "Guilin's classic city landmark, a limestone formation beside the river shaped like an elephant drinking.", "tip": "Worth seeing with spare city time; Yangshuo countryside is more essential."}, {"city": "Guilin", "name": "Longji Rice Terraces", "cn": "龙脊梯田", "priority": "High", "desc": "Vast terraced hillsides north of Guilin, shaped by generations of farming and dotted with minority villages.", "tip": "A significant excursion, so only add it if you want a full day away from Yangshuo."}, {"city": "Yangshuo", "name": "Yulong River", "cn": "遇龙河", "priority": "Must-see", "desc": "A serene river winding through karst countryside, famous for bamboo rafting, cycling and quiet rural scenery.", "tip": "Combine a raft section with cycling or e-biking through the villages."}, {"city": "Yangshuo", "name": "Xingping & ¥20 Viewpoint", "cn": "兴坪", "priority": "Must-see", "desc": "A historic riverside town and nearby viewpoint associated with the karst scene on the Chinese ¥20 banknote.", "tip": "Excellent as a half- or full-day outing from Yangshuo."}, {"city": "Yangshuo", "name": "Ten-Mile Gallery", "cn": "十里画廊", "priority": "High", "desc": "A scenic countryside corridor framed by limestone peaks, villages and cycling routes.", "tip": "Best explored slowly by bicycle or e-bike."}, {"city": "Yangshuo", "name": "Xianggong Hill", "cn": "相公山", "priority": "High", "desc": "A steep but short climb to one of the best elevated views over the Li River and surrounding karst peaks.", "tip": "Sunrise is famous, but clear visibility matters more than the exact time."}, {"city": "Yangshuo", "name": "West Street", "cn": "西街", "priority": "Medium", "desc": "Yangshuo's lively central pedestrian street packed with restaurants, bars, shops and evening crowds.", "tip": "Good after dinner; the countryside is the real reason to stay in Yangshuo."}],FK="china-food-passport-v1",AK="china-attractions-passport-v1",DB="china-food-passport-photos";
+let v="food",city="All",fs=L(FK),as=L(AK),db;
+function L(k){try{return JSON.parse(localStorage.getItem(k)||"{}")}catch{return {}}} function S(){localStorage.setItem(FK,JSON.stringify(fs));localStorage.setItem(AK,JSON.stringify(as));hero()}
+function fid(x){return(x.city+"::"+x.name).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")} function aid(x){return"attr-"+fid(x)} function blank(){return{done:false,score:"",notes:""}}
+function e(type,id){let s=type==="food"?fs:as;if(!s[id])s[id]=blank();return s[id]} function done(type,z){return type==="food"?(z.done??z.tried??false):z.done}
+function toast(m){let t=document.getElementById("toast");t.textContent=m;t.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("on"),1600)}
+function odb(){return new Promise((r,j)=>{let q=indexedDB.open(DB,1);q.onupgradeneeded=()=>{if(!q.result.objectStoreNames.contains("photos"))q.result.createObjectStore("photos")};q.onsuccess=()=>{db=q.result;r()};q.onerror=()=>j()})}
+function pg(id){return new Promise(r=>{if(!db)return r(null);let q=db.transaction("photos").objectStore("photos").get(id);q.onsuccess=()=>r(q.result||null);q.onerror=()=>r(null)})}
+function pp(id,b){return new Promise((r,j)=>{let tx=db.transaction("photos","readwrite");tx.objectStore("photos").put(b,id);tx.oncomplete=r;tx.onerror=j})}
+function comp(f){return new Promise((r,j)=>{let im=new Image(),u=URL.createObjectURL(f);im.onload=()=>{let s=Math.min(1,1400/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext("2d").drawImage(im,0,0,c.width,c.height);c.toBlob(b=>{URL.revokeObjectURL(u);b?r(b):j()},"image/jpeg",.82)};im.onerror=j;im.src=u})}
+const CO=["All","Beijing","Xi'an","Chengdu","Chongqing","Zhangjiajie","Fenghuang","Guilin","Yangshuo"];
+function rc(){cities.innerHTML="";CO.forEach(c=>{let b=document.createElement("button");b.className="chip"+(c===city?" on":"");b.textContent=c;b.onclick=()=>{city=c;rc();render()};cities.append(b)})}
+function items(){return v==="food"?F:A} function id(x){return v==="food"?fid(x):aid(x)}
+function filt(){let q=search.value.trim().toLowerCase(),f=filter.value;return items().filter(x=>{let z=e(v,id(x)),d=done(v,z);if(city!=="All"&&x.city!==city)return false;if(q&&!(x.name+" "+x.cn+" "+x.city).toLowerCase().includes(q))return false;if(f==="no"&&d)return false;if(f==="yes"&&!d)return false;if(f==="9"&&Number(z.score)<9)return false;return true})}
+async function render(){if(v==="high")return rh();browse.hidden=false;grid.hidden=false;high.hidden=true;search.placeholder=v==="food"?"Search food or Chinese name…":"Search attraction or Chinese name…";let a=filt();title.textContent=city==="All"?(v==="food"?"All foods":"All attractions"):city;count.textContent=a.length+(v==="food"?" dishes":" sights");grid.innerHTML="";if(!a.length){grid.innerHTML='<div class="empty">Nothing matches this view.</div>';return}
+for(let x of a){let z=e(v,id(x)),d=done(v,z),c=document.createElement("article");c.className="card"+(d?" done":"");let main=document.createElement("div");main.className="main",ph=document.createElement("div");ph.className="photo";ph.innerHTML=(v==="food"?"📷":"🏯")+'<small>Tap to add photo</small>';let pic=await pg(id(x));if(pic){let im=document.createElement("img");im.src=URL.createObjectURL(pic);ph.append(im);ph.querySelector("small").textContent="Tap to replace"}let fi=document.createElement("input");fi.type="file";fi.accept="image/*";fi.hidden=true;fi.onchange=async()=>{let f=fi.files&&fi.files[0];if(f){try{await pp(id(x),await comp(f));toast("Photo saved");render()}catch{toast("Could not save photo")}}};ph.onclick=()=>fi.click();ph.append(fi);
+let body=document.createElement("div");body.className="body";let top=document.createElement("div");top.className="top";let tw=document.createElement("div");tw.innerHTML='<div class="name"></div><div class="cn"></div>';tw.querySelector(".name").textContent=x.name;tw.querySelector(".cn").textContent=x.cn;if(v==="sight"){let p=document.createElement("span");p.className="pri "+x.priority.toLowerCase().replace(" ","-");p.textContent=x.priority;tw.append(p)}let ck=document.createElement("button");ck.className="check"+(d?" on":"");ck.textContent=d?"✓":"";ck.onclick=()=>{if(v==="food"){z.tried=!d;z.done=z.tried}else z.done=!d;S();render()};top.append(tw,ck);
+let ctr=document.createElement("div");ctr.className="controls";let sc=document.createElement("select");sc.className="score";sc.innerHTML='<option value="">Score /10</option>'+[1,2,3,4,5,6,7,8,9,10].map(n=>'<option>'+n+'</option>').join("");sc.value=z.score||"";sc.onchange=()=>{z.score=sc.value;if(sc.value){if(v==="food"){z.tried=true;z.done=true}else z.done=true}S();render()};let ab=document.createElement("button");ab.className="btn info";ab.textContent=v==="food"?"What is it?":"About";ab.onclick=()=>info(x);let nb=document.createElement("button");nb.className="btn";nb.textContent=z.notes?"Edit notes":"Add notes";let nt=document.createElement("textarea");nt.className="notes";nt.placeholder=v==="food"?"Where did you eat it? What did you think?":"What stood out? Any tips or memories?";nt.value=z.notes||"";nb.onclick=()=>{nt.classList.toggle("on");if(nt.classList.contains("on"))nt.focus()};nt.onchange=()=>{z.notes=nt.value.trim();S();nb.textContent=z.notes?"Edit notes":"Add notes"};ctr.append(sc,ab,nb,nt);body.append(top,ctr);main.append(ph,body);c.append(main);let ft=document.createElement("div");ft.className="foot";ft.textContent=x.city;c.append(ft);grid.append(c)}}}
+function info(x){mn.textContent=x.name;mc.textContent=x.cn;md.textContent=x.desc;mv.textContent=x.tip;mt.textContent=v==="food"?"Ordering tip":"Visit tip";dlg.showModal()}
+function rank(arr,type){return arr.map(x=>{let z=type==="food"?(fs[fid(x)]||blank()):(as[aid(x)]||blank());return{x,score:Number(z.score)||0}}).filter(z=>z.score).sort((a,b)=>b.score-a.score).slice(0,5)}
+function rbox(t,a){let h='<div class="box"><h3>'+t+'</h3><div class="rank">';if(!a.length)h+='<div class="empty">Start scoring to build your ranking.</div>';a.forEach((z,i)=>h+='<div class="ri"><div class="num">'+(i+1)+'</div><div><b>'+z.x.name+'</b><small>'+z.x.city+'</small></div><div class="rs">'+z.score+'/10</div></div>');return h+'</div></div>'}
+function rh(){browse.hidden=true;grid.hidden=true;high.hidden=false;let h=rbox("🍜 Favourite foods",rank(F,"food"))+rbox("🏯 Favourite attractions",rank(A,"sight")),rows="";CO.slice(1).forEach(c=>{let f=F.filter(x=>x.city===c),a=A.filter(x=>x.city===c),d=f.filter(x=>done("food",fs[fid(x)]||blank())).length+a.filter(x=>done("sight",as[aid(x)]||blank())).length,t=f.length+a.length,p=Math.round(d/t*100);rows+='<div class="cityrow"><b>'+c+'</b><div class="mini"><div style="width:'+p+'%"></div></div><span>'+p+'%</span></div>'});high.innerHTML=h+'<div class="box"><h3>🗺️ City completion</h3>'+rows+'</div>';hero()}
+function hero(){let ar=v==="food"?F.map(x=>fs[fid(x)]||blank()):v==="sight"?A.map(x=>as[aid(x)]||blank()):[...F.map(x=>fs[fid(x)]||blank()),...A.map(x=>as[aid(x)]||blank())];let d=ar.filter(z=>done(v==="food"?"food":v==="sight"?"sight":"sight",z)||z.tried).length,s=ar.map(z=>Number(z.score)).filter(Boolean),p=Math.round(d/ar.length*100);pt.textContent=d+" of "+ar.length+" completed";pp.textContent=p+"%";pb.style.width=p+"%";sd.textContent=d;sa.textContent=s.length?(s.reduce((a,b)=>a+b,0)/s.length).toFixed(1):"—";st.textContent=ar.length;sdl.textContent=v==="food"?"foods tried":v==="sight"?"sights visited":"completed";stl.textContent=v==="food"?"foods":v==="sight"?"sights":"total items"}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{v=b.dataset.v;city="All";document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("on",x===b));rc();hero();v==="high"?rh():render()});search.oninput=render;filter.onchange=render;x.onclick=()=>dlg.close();
+async function dataurl(b){return new Promise(r=>{let q=new FileReader();q.onload=()=>r(q.result);q.readAsDataURL(b)})}
+export.onclick=async()=>{let photos={};for(let x of [...F,...A]){let k=F.includes(x)?fid(x):aid(x),b=await pg(k);if(b)photos[k]=await dataurl(b)}let blob=new Blob([JSON.stringify({version:2,foodState:fs,attrState:as,photos})],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="china-trip-passport-backup.json";a.click();toast("Backup exported")}
+import.onchange=async ev=>{try{let p=JSON.parse(await ev.target.files[0].text());fs=p.foodState||p.state||fs;as=p.attrState||as;if(p.photos)for(let[k,u]of Object.entries(p.photos))await pp(k,await(await fetch(u)).blob());S();toast("Backup imported");v==="high"?rh():render()}catch{toast("Could not import backup")}ev.target.value=""}
+reset.onclick=async()=>{if(!confirm("Reset all food and attraction data?"))return;fs={};as={};localStorage.removeItem(FK);localStorage.removeItem(AK);if(db){let tx=db.transaction("photos","readwrite");tx.objectStore("photos").clear()}S();v==="high"?rh():render();toast("Trip data reset")}
+(async()=>{try{await odb()}catch{}rc();hero();render();if("serviceWorker"in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("./sw.js").catch(()=>{})})();
+</script></body></html>

@@ -1,63 +1,22 @@
-CHINA FOOD PASSPORT
-===================
+CHINA TRIP PASSPORT V2
 
-What this is
-------------
-A free, self-contained iPhone-friendly Progressive Web App (PWA) for your China trip.
+New:
+- Food tab with your original 39 dishes
+- Sights tab with attractions across every city
+- Ratings, photos and notes for attractions
+- Must-see / High / Medium priority
+- Highlights tab with favourite-food and favourite-sight rankings
+- City completion percentages
 
-Features
---------
-- 39 local foods across Beijing, Xi'an, Chengdu, Chongqing, Zhangjiajie, Fenghuang, Guilin and Yangshuo
-- Tried checkbox
-- Score out of 10
-- Photo for each dish
-- "What is it?" description and ordering tip
-- Personal notes
-- Search + city filters
-- Progress and average rating
-- Offline support after first load
-- Export/import backup
+UPDATING YOUR EXISTING GITHUB PAGES APP
+1. First use Export backup in your current app if you have entered any real data.
+2. Open the same GitHub repository you created for the Food Passport.
+3. Replace index.html, manifest.webmanifest, sw.js, icon-192.png and icon-512.png with the files in this ZIP.
+4. Commit the changes.
+5. Wait a minute or two for GitHub Pages to redeploy.
+6. On your iPhone, fully close the Home Screen app and reopen it.
+7. If it still shows the old version, open the GitHub Pages URL in Safari, refresh it, then reopen the Home Screen app.
 
-FREE GITHUB PAGES SETUP
------------------------
-1. Create a free account at github.com if you do not already have one.
-2. Create a new PUBLIC repository, e.g. china-food-passport.
-3. Upload ALL files from this folder to the repository root:
-   index.html
-   manifest.webmanifest
-   sw.js
-   icon-192.png
-   icon-512.png
-4. Open repository Settings > Pages.
-5. Under "Build and deployment", choose "Deploy from a branch".
-6. Select branch "main" and folder "/ (root)", then Save.
-7. GitHub will show you your live site address after deployment.
+The V2 app deliberately reuses the V1 food storage key and photo database, so existing food checkmarks, scores, notes and photos on the same iPhone/browser should remain.
 
-ADD TO IPHONE HOME SCREEN
--------------------------
-1. Open the live GitHub Pages URL in Safari.
-2. Tap Share.
-3. Tap "Add to Home Screen".
-4. Make sure "Open as Web App" is enabled (if shown).
-5. Tap Add.
-
-DATA / PRIVACY
---------------
-Your checkboxes, scores and notes are stored locally in your browser.
-Photos are stored locally in the browser's IndexedDB.
-Nothing is uploaded by this app.
-
-IMPORTANT: clearing Safari website data can erase local app data.
-Use "Export backup" occasionally. The backup includes your photos.
-
-UPDATING THE APP
-----------------
-If you later replace index.html with a newer version, your saved trip data should remain because it is stored separately in browser storage.
-
-FILES
------
-index.html            Main app
-manifest.webmanifest  Home-screen/PWA settings
-sw.js                 Offline cache
-icon-192.png          App icon
-icon-512.png          App icon
+Do not clear Safari website data unless you have exported a backup.
