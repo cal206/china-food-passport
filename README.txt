@@ -1,22 +1,25 @@
-CHINA TRIP PASSPORT V2
+CHINA TRIP PASSPORT — FIXED V2.1
 
-New:
-- Food tab with your original 39 dishes
-- Sights tab with attractions across every city
-- Ratings, photos and notes for attractions
-- Must-see / High / Medium priority
-- Highlights tab with favourite-food and favourite-sight rankings
-- City completion percentages
+This corrects the JavaScript loading problem in V2.
 
-UPDATING YOUR EXISTING GITHUB PAGES APP
-1. First use Export backup in your current app if you have entered any real data.
-2. Open the same GitHub repository you created for the Food Passport.
-3. Replace index.html, manifest.webmanifest, sw.js, icon-192.png and icon-512.png with the files in this ZIP.
+HOW TO UPDATE YOUR EXISTING GITHUB PAGES APP
+1. Download and extract this ZIP.
+2. Open your existing GitHub repository.
+3. Replace these five files in the repository root:
+   index.html
+   manifest.webmanifest
+   sw.js
+   icon-192.png
+   icon-512.png
 4. Commit the changes.
-5. Wait a minute or two for GitHub Pages to redeploy.
-6. On your iPhone, fully close the Home Screen app and reopen it.
-7. If it still shows the old version, open the GitHub Pages URL in Safari, refresh it, then reopen the Home Screen app.
+5. Wait 1–2 minutes for GitHub Pages to deploy.
+6. On iPhone, open the GitHub Pages URL in Safari and refresh it.
+7. Confirm the top of the app says "CHINA 2026 • v2.1".
+8. Fully close the Home Screen app and reopen it.
 
-The V2 app deliberately reuses the V1 food storage key and photo database, so existing food checkmarks, scores, notes and photos on the same iPhone/browser should remain.
+Your original food data is still compatible:
+- Same food local-storage key
+- Same food photo database
+- Same food item IDs
 
-Do not clear Safari website data unless you have exported a backup.
+If you have existing data, export a backup before changing or clearing any Safari website data.
