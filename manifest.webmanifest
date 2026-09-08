@@ -3,8 +3,8 @@
   "short_name": "China Passport",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#f6f1ea",
-  "theme_color": "#951d18",
+  "background_color": "#f7f2eb",
+  "theme_color": "#941f19",
   "icons": [
     {
       "src": "icon-192.png",

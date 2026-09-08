@@ -1,25 +1,41 @@
-CHINA TRIP PASSPORT — FIXED V2.1
+CHINA TRIP PASSPORT V3.0
 
-This corrects the JavaScript loading problem in V2.
+NEW IN V3
+- Today page tied to your 12 Sep–2 Oct itinerary
+- Two-person ratings with editable names
+- What should we eat next? random picker
+- Large Chinese show-to-restaurant screen
+- Spice and adventurousness levels
+- Food cost tracker in RMB + optional GBP estimate
+- Would-have-again toggle
+- Add your own foods and attractions
+- Apple Maps button for attractions
+- Daily mini journal + photo of the day
+- Achievements / badges
+- End-of-trip awards
+- Rating and completion charts
+- China Wrapped share/download image with top photos
+- Full V3 backup/import including journal, custom items and photos
 
-HOW TO UPDATE YOUR EXISTING GITHUB PAGES APP
-1. Download and extract this ZIP.
-2. Open your existing GitHub repository.
-3. Replace these five files in the repository root:
+UPDATING YOUR EXISTING GITHUB PAGES APP
+1. In your current app, use Settings > Export backup first if you have entered any real data.
+2. Download and extract this ZIP.
+3. In the SAME GitHub repository, replace:
    index.html
    manifest.webmanifest
    sw.js
    icon-192.png
    icon-512.png
-4. Commit the changes.
-5. Wait 1–2 minutes for GitHub Pages to deploy.
-6. On iPhone, open the GitHub Pages URL in Safari and refresh it.
-7. Confirm the top of the app says "CHINA 2026 • v2.1".
-8. Fully close the Home Screen app and reopen it.
+4. Commit changes and wait 1–2 minutes.
+5. Open the GitHub Pages URL in Safari and refresh.
+6. Confirm the header says China 2026 • V3.0.
+7. Fully close and reopen the Home Screen app.
 
-Your original food data is still compatible:
-- Same food local-storage key
-- Same food photo database
-- Same food item IDs
+DATA COMPATIBILITY
+V3 deliberately keeps the V1/V2 food local-storage key, V2 attraction key and the same photo database/IDs. Existing food and sight progress should carry over. Legacy single ratings are automatically treated as both travellers' ratings until you change them.
 
-If you have existing data, export a backup before changing or clearing any Safari website data.
+CURRENCY
+The app does not fetch exchange rates. Set an approximate 'RMB per £1' value in Settings if you want GBP estimates.
+
+PRIVACY
+Your ratings, notes, journal and photos stay locally on the device unless you export a backup.
