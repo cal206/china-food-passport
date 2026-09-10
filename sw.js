@@ -1,4 +1,4 @@
-const CACHE="china-trip-passport-v4";
+const CACHE="china-trip-passport-v4-1-recovery";
 const LOCAL=["./","./index.html","./config.js","./manifest.webmanifest","./icon-192.png","./icon-512.png"];
 self.addEventListener("install",event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(LOCAL)));self.skipWaiting()});
 self.addEventListener("activate",event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim()});
